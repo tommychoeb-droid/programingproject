@@ -1,0 +1,608 @@
+from tkinter import *
+from tkinter import messagebox
+
+# ===============================
+# MAIN WINDOW
+# ===============================
+
+root = Tk()
+root.title("Community Database")
+root.geometry("900x650")
+
+# ===============================
+# DATA STORAGE
+# ===============================
+
+residents = []
+
+# ===============================
+# VALIDATION FUNCTIONS
+# ===============================
+
+def validate_number(value):
+
+    if value == "":
+        return True
+
+    return value.isdigit()
+
+
+def validate_text(value):
+
+    if value == "":
+        return True
+
+    return all(
+        char.isalpha() or char.isspace()
+        for char in value
+    )
+
+
+number_vcmd = root.register(validate_number)
+text_vcmd = root.register(validate_text)
+
+# ===============================
+# FUNCTIONS
+# ===============================
+
+def add_resident():
+
+    resident_id = id_entry.get().strip()
+    name = name_entry.get().strip()
+    age = age_entry.get().strip()
+    gender = gender_entry.get().strip()
+    occupation = occupation_entry.get().strip()
+    phone = phone_entry.get().strip()
+    address = address_entry.get().strip()
+
+    # Empty Fields
+
+    if (resident_id == "" or
+        name == "" or
+        age == "" or
+        gender == "" or
+        occupation == "" or
+        phone == "" or
+        address == ""):
+
+        messagebox.showerror(
+            "Input Error",
+            "Please fill all fields."
+        )
+
+        return
+
+
+    # Resident ID Validation
+
+    if not resident_id.isdigit():
+
+        messagebox.showerror(
+            "Invalid Resident ID",
+            "Resident ID must contain numbers only."
+        )
+
+        return
+
+
+    # Name Validation
+
+    if not all(
+        char.isalpha() or char.isspace()
+        for char in name
+    ):
+
+        messagebox.showerror(
+            "Invalid Name",
+            "Name must contain letters only."
+        )
+
+        return
+
+
+    # Age Validation
+
+    if not age.isdigit():
+
+        messagebox.showerror(
+            "Invalid Age",
+            "Age must contain numbers only."
+        )
+
+        return
+
+
+    if int(age) <= 0:
+
+        messagebox.showerror(
+            "Invalid Age",
+            "Age must be greater than zero."
+        )
+
+        return
+
+
+    # Gender Validation
+
+    if not all(
+        char.isalpha() or char.isspace()
+        for char in gender
+    ):
+
+        messagebox.showerror(
+            "Invalid Gender",
+            "Gender must contain letters only."
+        )
+
+        return
+
+
+    # Occupation Validation
+
+    if not all(
+        char.isalpha() or char.isspace()
+        for char in occupation
+    ):
+
+        messagebox.showerror(
+            "Invalid Occupation",
+            "Occupation must contain letters only."
+        )
+
+        return
+
+
+    # Phone Validation
+
+    if not phone.isdigit():
+
+        messagebox.showerror(
+            "Invalid Phone Number",
+            "Phone Number must contain digits only."
+        )
+
+        return
+
+
+    # Duplicate ID Check
+
+    for resident in residents:
+
+        if resident["ID"] == resident_id:
+
+            messagebox.showerror(
+                "Duplicate ID",
+                "Resident ID already exists."
+            )
+
+            return
+
+
+    # Create Dictionary
+
+    resident = {
+
+        "ID": resident_id,
+
+        "Name": name,
+
+        "Age": int(age),
+
+        "Gender": gender,
+
+        "Occupation": occupation,
+
+        "Phone": phone,
+
+        "Address": address
+
+    }
+
+
+    residents.append(resident)
+
+
+    messagebox.showinfo(
+        "Success",
+        "Resident added successfully."
+    )
+
+
+    clear_fields()
+
+
+# =====================================
+
+def search_resident():
+
+    search_id = id_entry.get()
+
+    output_text.delete(1.0, END)
+
+    found = False
+
+    for resident in residents:
+
+        if resident["ID"] == search_id:
+
+            found = True
+
+            output_text.insert(
+                END,
+
+                f"Resident Found\n\n"
+
+                f"Resident ID: {resident['ID']}\n"
+
+                f"Full Name: {resident['Name']}\n"
+
+                f"Age: {resident['Age']}\n"
+
+                f"Gender: {resident['Gender']}\n"
+
+                f"Occupation: {resident['Occupation']}\n"
+
+                f"Phone Number: {resident['Phone']}\n"
+
+                f"Address: {resident['Address']}\n"
+
+            )
+
+    if not found:
+
+        output_text.insert(
+            END,
+            "Resident not found."
+        )
+
+
+# =====================================
+
+def delete_resident():
+
+    delete_id = id_entry.get()
+
+    for resident in residents:
+
+        if resident["ID"] == delete_id:
+
+            residents.remove(resident)
+
+            messagebox.showinfo(
+                "Deleted",
+                "Resident deleted successfully."
+            )
+
+            return
+
+
+    messagebox.showerror(
+        "Error",
+        "Resident not found."
+    )
+
+
+# =====================================
+
+def view_records():
+
+    output_text.delete(1.0, END)
+
+    if len(residents) == 0:
+
+        output_text.insert(
+            END,
+            "No records available."
+        )
+
+        return
+
+
+    for resident in residents:
+
+        output_text.insert(
+
+            END,
+
+            f"Resident ID : {resident['ID']}\n"
+
+            f"Name : {resident['Name']}\n"
+
+            f"Age : {resident['Age']}\n"
+
+            f"Gender : {resident['Gender']}\n"
+
+            f"Occupation : {resident['Occupation']}\n"
+
+            f"Phone : {resident['Phone']}\n"
+
+            f"Address : {resident['Address']}\n"
+
+            f"{'-'*40}\n"
+
+        )
+
+
+# =====================================
+
+def generate_statistics():
+
+    total = len(residents)
+
+    adults = 0
+    minors = 0
+
+    males = 0
+    females = 0
+
+
+    for resident in residents:
+
+        if resident["Age"] >= 18:
+
+            adults += 1
+
+        else:
+
+            minors += 1
+
+
+        if resident["Gender"].lower() == "male":
+
+            males += 1
+
+
+        elif resident["Gender"].lower() == "female":
+
+            females += 1
+
+
+    output_text.delete(1.0, END)
+
+
+    output_text.insert(
+
+        END,
+
+        "COMMUNITY STATISTICS\n\n"
+
+        f"Total Residents : {total}\n"
+
+        f"Adults : {adults}\n"
+
+        f"Minors : {minors}\n"
+
+        f"Males : {males}\n"
+
+        f"Females : {females}"
+
+    )
+
+
+# =====================================
+
+def clear_fields():
+
+    id_entry.delete(0, END)
+
+    name_entry.delete(0, END)
+
+    age_entry.delete(0, END)
+
+    gender_entry.delete(0, END)
+
+    occupation_entry.delete(0, END)
+
+    phone_entry.delete(0, END)
+
+    address_entry.delete(0, END)
+
+
+# ===============================
+# TITLE
+# ===============================
+
+Label(
+
+    root,
+
+    text="Community Database",
+
+    font=("Arial",18,"bold")
+
+).pack(pady=10)
+
+
+# ===============================
+# FRAME
+# ===============================
+
+frame = Frame(root)
+
+frame.pack()
+
+
+# Labels
+
+Label(frame,text="Resident ID").grid(row=0,column=0,padx=10,pady=5)
+
+Label(frame,text="Full Name").grid(row=1,column=0,padx=10,pady=5)
+
+Label(frame,text="Age").grid(row=2,column=0,padx=10,pady=5)
+
+Label(frame,text="Gender").grid(row=3,column=0,padx=10,pady=5)
+
+Label(frame,text="Occupation").grid(row=4,column=0,padx=10,pady=5)
+
+Label(frame,text="Phone Number").grid(row=5,column=0,padx=10,pady=5)
+
+Label(frame,text="Address").grid(row=6,column=0,padx=10,pady=5)
+
+
+# Entries
+
+id_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(number_vcmd,"%P")
+
+)
+
+
+name_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(text_vcmd,"%P")
+
+)
+
+
+age_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(number_vcmd,"%P")
+
+)
+
+
+gender_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(text_vcmd,"%P")
+
+)
+
+
+occupation_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(text_vcmd,"%P")
+
+)
+
+
+phone_entry = Entry(
+
+    frame,
+
+    width=30,
+
+    validate="key",
+
+    validatecommand=(number_vcmd,"%P")
+
+)
+
+
+address_entry = Entry(
+
+    frame,
+
+    width=30
+
+)
+
+
+# Position Entries
+
+id_entry.grid(row=0,column=1)
+
+name_entry.grid(row=1,column=1)
+
+age_entry.grid(row=2,column=1)
+
+gender_entry.grid(row=3,column=1)
+
+occupation_entry.grid(row=4,column=1)
+
+phone_entry.grid(row=5,column=1)
+
+address_entry.grid(row=6,column=1)
+
+
+# ===============================
+# BUTTONS
+# ===============================
+
+button_frame = Frame(root)
+
+button_frame.pack(pady=10)
+
+
+Button(button_frame,text="Add Record",
+       width=15,
+       command=add_resident).grid(row=0,column=0,padx=5)
+
+
+Button(button_frame,text="Search Record",
+       width=15,
+       command=search_resident).grid(row=0,column=1,padx=5)
+
+
+Button(button_frame,text="Delete Record",
+       width=15,
+       command=delete_resident).grid(row=0,column=2,padx=5)
+
+
+Button(button_frame,text="View Records",
+       width=15,
+       command=view_records).grid(row=0,column=3,padx=5)
+
+
+Button(button_frame,text="Statistics",
+       width=15,
+       command=generate_statistics).grid(row=0,column=4,padx=5)
+
+
+Button(button_frame,text="Clear",
+       width=15,
+       command=clear_fields).grid(row=0,column=5,padx=5)
+
+
+# ===============================
+# OUTPUT BOX
+# ===============================
+
+output_text = Text(
+
+    root,
+
+    width=100,
+
+    height=15
+
+)
+
+output_text.pack(pady=20)
+
+
+# ===============================
+# RUN PROGRAM
+# ===============================
+
+root.mainloop()
