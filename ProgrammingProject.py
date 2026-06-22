@@ -1,59 +1,44 @@
 from tkinter import *
 from tkinter import messagebox
 
-# ===============================
+# =====================================
 # MAIN WINDOW
-# ===============================
+# =====================================
 
 root = Tk()
+
 root.title("Community Database")
+
 root.geometry("900x650")
 
-# ===============================
+
+# =====================================
 # DATA STORAGE
-# ===============================
+# =====================================
 
 residents = []
 
-# ===============================
-# VALIDATION FUNCTIONS
-# ===============================
 
-def validate_number(value):
-
-    if value == "":
-        return True
-
-    return value.isdigit()
-
-
-def validate_text(value):
-
-    if value == "":
-        return True
-
-    return all(
-        char.isalpha() or char.isspace()
-        for char in value
-    )
-
-
-number_vcmd = root.register(validate_number)
-text_vcmd = root.register(validate_text)
-
-# ===============================
+# =====================================
 # FUNCTIONS
-# ===============================
+# =====================================
 
 def add_resident():
 
     resident_id = id_entry.get().strip()
+
     name = name_entry.get().strip()
+
     age = age_entry.get().strip()
+
     gender = gender_entry.get().strip()
+
     occupation = occupation_entry.get().strip()
+
     phone = phone_entry.get().strip()
+
     address = address_entry.get().strip()
+
 
     # Empty Fields
 
@@ -67,7 +52,7 @@ def add_resident():
 
         messagebox.showerror(
             "Input Error",
-            "Please fill all fields."
+            "Please fill in all fields."
         )
 
         return
@@ -94,7 +79,7 @@ def add_resident():
 
         messagebox.showerror(
             "Invalid Name",
-            "Name must contain letters only."
+            "Full Name must contain letters only."
         )
 
         return
@@ -178,7 +163,7 @@ def add_resident():
             return
 
 
-    # Create Dictionary
+    # Create Resident Record
 
     resident = {
 
@@ -211,15 +196,17 @@ def add_resident():
     clear_fields()
 
 
+
 # =====================================
 
 def search_resident():
 
-    search_id = id_entry.get()
+    search_id = id_entry.get().strip()
 
     output_text.delete(1.0, END)
 
     found = False
+
 
     for resident in residents:
 
@@ -228,39 +215,46 @@ def search_resident():
             found = True
 
             output_text.insert(
+
                 END,
 
                 f"Resident Found\n\n"
 
-                f"Resident ID: {resident['ID']}\n"
+                f"Resident ID : {resident['ID']}\n"
 
-                f"Full Name: {resident['Name']}\n"
+                f"Full Name : {resident['Name']}\n"
 
-                f"Age: {resident['Age']}\n"
+                f"Age : {resident['Age']}\n"
 
-                f"Gender: {resident['Gender']}\n"
+                f"Gender : {resident['Gender']}\n"
 
-                f"Occupation: {resident['Occupation']}\n"
+                f"Occupation : {resident['Occupation']}\n"
 
-                f"Phone Number: {resident['Phone']}\n"
+                f"Phone Number : {resident['Phone']}\n"
 
-                f"Address: {resident['Address']}\n"
+                f"Address : {resident['Address']}\n"
 
             )
+
 
     if not found:
 
         output_text.insert(
+
             END,
+
             "Resident not found."
+
         )
+
 
 
 # =====================================
 
 def delete_resident():
 
-    delete_id = id_entry.get()
+    delete_id = id_entry.get().strip()
+
 
     for resident in residents:
 
@@ -268,18 +262,29 @@ def delete_resident():
 
             residents.remove(resident)
 
+
             messagebox.showinfo(
+
                 "Deleted",
+
                 "Resident deleted successfully."
+
             )
+
+
+            clear_fields()
 
             return
 
 
     messagebox.showerror(
+
         "Error",
+
         "Resident not found."
+
     )
+
 
 
 # =====================================
@@ -288,17 +293,22 @@ def view_records():
 
     output_text.delete(1.0, END)
 
+
     if len(residents) == 0:
 
         output_text.insert(
+
             END,
+
             "No records available."
+
         )
 
         return
 
 
     for resident in residents:
+
 
         output_text.insert(
 
@@ -323,6 +333,7 @@ def view_records():
         )
 
 
+
 # =====================================
 
 def generate_statistics():
@@ -330,13 +341,16 @@ def generate_statistics():
     total = len(residents)
 
     adults = 0
+
     minors = 0
 
     males = 0
+
     females = 0
 
 
     for resident in residents:
+
 
         if resident["Age"] >= 18:
 
@@ -355,6 +369,7 @@ def generate_statistics():
         elif resident["Gender"].lower() == "female":
 
             females += 1
+
 
 
     output_text.delete(1.0, END)
@@ -379,6 +394,7 @@ def generate_statistics():
     )
 
 
+
 # =====================================
 
 def clear_fields():
@@ -398,9 +414,10 @@ def clear_fields():
     address_entry.delete(0, END)
 
 
-# ===============================
+
+# =====================================
 # TITLE
-# ===============================
+# =====================================
 
 Label(
 
@@ -413,16 +430,15 @@ Label(
 ).pack(pady=10)
 
 
-# ===============================
-# FRAME
-# ===============================
+
+# =====================================
+# INPUT FRAME
+# =====================================
 
 frame = Frame(root)
 
-frame.pack()
+frame.pack(pady=10)
 
-
-# Labels
 
 Label(frame,text="Resident ID").grid(row=0,column=0,padx=10,pady=5)
 
@@ -439,96 +455,24 @@ Label(frame,text="Phone Number").grid(row=5,column=0,padx=10,pady=5)
 Label(frame,text="Address").grid(row=6,column=0,padx=10,pady=5)
 
 
-# Entries
 
-id_entry = Entry(
+# Entry Boxes
 
-    frame,
+id_entry = Entry(frame,width=30)
 
-    width=30,
+name_entry = Entry(frame,width=30)
 
-    validate="key",
+age_entry = Entry(frame,width=30)
 
-    validatecommand=(number_vcmd,"%P")
+gender_entry = Entry(frame,width=30)
 
-)
+occupation_entry = Entry(frame,width=30)
 
+phone_entry = Entry(frame,width=30)
 
-name_entry = Entry(
-
-    frame,
-
-    width=30,
-
-    validate="key",
-
-    validatecommand=(text_vcmd,"%P")
-
-)
+address_entry = Entry(frame,width=30)
 
 
-age_entry = Entry(
-
-    frame,
-
-    width=30,
-
-    validate="key",
-
-    validatecommand=(number_vcmd,"%P")
-
-)
-
-
-gender_entry = Entry(
-
-    frame,
-
-    width=30,
-
-    validate="key",
-
-    validatecommand=(text_vcmd,"%P")
-
-)
-
-
-occupation_entry = Entry(
-
-    frame,
-
-    width=30,
-
-    validate="key",
-
-    validatecommand=(text_vcmd,"%P")
-
-)
-
-
-phone_entry = Entry(
-
-    frame,
-
-    width=30,
-
-    validate="key",
-
-    validatecommand=(number_vcmd,"%P")
-
-)
-
-
-address_entry = Entry(
-
-    frame,
-
-    width=30
-
-)
-
-
-# Position Entries
 
 id_entry.grid(row=0,column=1)
 
@@ -545,48 +489,98 @@ phone_entry.grid(row=5,column=1)
 address_entry.grid(row=6,column=1)
 
 
-# ===============================
+
+# =====================================
 # BUTTONS
-# ===============================
+# =====================================
 
 button_frame = Frame(root)
 
-button_frame.pack(pady=10)
+button_frame.pack(pady=15)
 
 
-Button(button_frame,text="Add Record",
-       width=15,
-       command=add_resident).grid(row=0,column=0,padx=5)
+Button(
+
+    button_frame,
+
+    text="Add Record",
+
+    width=15,
+
+    command=add_resident
+
+).grid(row=0,column=0,padx=5)
 
 
-Button(button_frame,text="Search Record",
-       width=15,
-       command=search_resident).grid(row=0,column=1,padx=5)
+Button(
+
+    button_frame,
+
+    text="Search Record",
+
+    width=15,
+
+    command=search_resident
+
+).grid(row=0,column=1,padx=5)
 
 
-Button(button_frame,text="Delete Record",
-       width=15,
-       command=delete_resident).grid(row=0,column=2,padx=5)
+Button(
+
+    button_frame,
+
+    text="Delete Record",
+
+    width=15,
+
+    command=delete_resident
+
+).grid(row=0,column=2,padx=5)
 
 
-Button(button_frame,text="View Records",
-       width=15,
-       command=view_records).grid(row=0,column=3,padx=5)
+Button(
+
+    button_frame,
+
+    text="View Records",
+
+    width=15,
+
+    command=view_records
+
+).grid(row=0,column=3,padx=5)
 
 
-Button(button_frame,text="Statistics",
-       width=15,
-       command=generate_statistics).grid(row=0,column=4,padx=5)
+Button(
+
+    button_frame,
+
+    text="Statistics",
+
+    width=15,
+
+    command=generate_statistics
+
+).grid(row=0,column=4,padx=5)
 
 
-Button(button_frame,text="Clear",
-       width=15,
-       command=clear_fields).grid(row=0,column=5,padx=5)
+Button(
+
+    button_frame,
+
+    text="Clear",
+
+    width=15,
+
+    command=clear_fields
+
+).grid(row=0,column=5,padx=5)
 
 
-# ===============================
-# OUTPUT BOX
-# ===============================
+
+# =====================================
+# OUTPUT AREA
+# =====================================
 
 output_text = Text(
 
@@ -601,8 +595,9 @@ output_text = Text(
 output_text.pack(pady=20)
 
 
-# ===============================
+
+# =====================================
 # RUN PROGRAM
-# ===============================
+# =====================================
 
 root.mainloop()
